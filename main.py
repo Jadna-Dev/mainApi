@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 import uvicorn
+from activation.activation import activation
+
 app = FastAPI()
+
+app.mount("/activation", app=activation, name="activation")
 
 @app.get("/")
 async def home():
