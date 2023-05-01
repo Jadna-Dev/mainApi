@@ -9,4 +9,6 @@ async def home():
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app=app,host="45.9.190.123",port=8000)
+    with open("./config.json","r") as conf:
+        config = eval(str(conf.read()))
+    uvicorn.run(app=app,host=config["host"],port=config["port"])
