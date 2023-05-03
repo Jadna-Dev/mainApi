@@ -37,3 +37,6 @@ async def insert_data(ldata: dict):
                 f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
             )
         db.conn.commit()
+    return{
+        "info":"successfull"
+    }
