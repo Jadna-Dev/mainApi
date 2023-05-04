@@ -12,10 +12,10 @@ async def insert_data(ldata: dict):
     for d in data["data"]:
         db.conn.rollback()
         db.drop_table(data["onlineDbName"], d["tablename"])
-        sleep(2)
+        sleep(1)
         exec(f"""db.create_{d["tablename"]}(\"{data["onlineDbName"]}\")""")
         print("here")
-        sleep(2)
+        sleep(1)
         for row in d["data"]:
             fields = ""
             values = ""
