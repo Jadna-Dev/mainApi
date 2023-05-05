@@ -63,9 +63,9 @@ def create_pdxinv(dbname):
   `itemcode` varchar(100) DEFAULT NULL,
   `type` varchar(45) DEFAULT NULL,
   `depstk` varchar(45) DEFAULT NULL,
-  `qin` decimal(18,3) DEFAULT NULL,
-  `qout` decimal(18,3) DEFAULT NULL,
-  `qprice` decimal(18,3) DEFAULT NULL
+  `qin` decimal(18,7) DEFAULT NULL,
+  `qout` decimal(18,7) DEFAULT NULL,
+  `qprice` decimal(18,7) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 """)
     conn.commit()
