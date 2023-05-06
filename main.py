@@ -18,4 +18,4 @@ async def home():
 if __name__ == "__main__":
     with open("./config.json", "r") as conf:
         config = eval(str(conf.read()))
-    uvicorn.run("main:app", host=config["host"], port=config["port"],workers=4)
+    uvicorn.run("main:app", host=config["host"], port=config["port"],workers=2)
