@@ -7,6 +7,7 @@ database = FastAPI()
 
 @database.post("/insert_data/")
 async def insert_data(ldata: dict):
+    err = ""
     try:
         data = ldata["data"]
         db.conn.database = data["onlineDbName"]
@@ -28,19 +29,25 @@ async def insert_data(ldata: dict):
 
                 for idx, val in enumerate(row.values()):
                     if idx == 0:
-                        values = values + "\'" + str(val).replace("\'", "")+"\'"
+                        values = values + "\'" + \
+                            str(val).replace("\'", "").replace("\\","")+"\'"
                     else:
                         values = values + "," + "\'" + \
-                            str(val).replace("\'", "")+"\'"
+                            str(val).replace("\'", "").replace("\\","")+"\'"
+                # print(
+                #     f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
+                # )
+                err = f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
                 db.cur.execute(
                     f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
                 )
             db.conn.commit()
-        return{
-            "info":"successfull"
+        return {
+            "info": "successfull"
         }
     except Exception as e:
-        return{
-            "info":"failed",
-            "msg":str(e)
+        print(err)
+        return {
+            "info": "failed",
+            "msg": str(e)
         }
