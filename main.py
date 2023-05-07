@@ -31,4 +31,4 @@ async def home():
 if __name__ == "__main__":
     with open("./config.json", "r") as conf:
         config = eval(str(conf.read()))
-    uvicorn.run("main:app", host=config["host"], port=config["port"],reload=True,ssl_certfile="./cert/pssapi_net.pem",ssl_keyfile="./cert/pssapi_key.pem")
+    uvicorn.run("main:app", host=config["host"], port=config["port"],reload=True)
