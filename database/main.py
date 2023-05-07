@@ -1,6 +1,6 @@
 from time import sleep
 from fastapi import FastAPI
-from database import database as db
+import database.database as db
 
 database = FastAPI()
 
@@ -8,6 +8,7 @@ database = FastAPI()
 @database.post("/insert_data/")
 async def insert_data(ldata: dict):
     err = ""
+    db.conn.rollback()
     try:
         data = ldata["data"]
         db.conn.database = data["onlineDbName"]
@@ -43,10 +44,12 @@ async def insert_data(ldata: dict):
                 )
             db.conn.commit()
         return {
-            "info": "successfull"
+            "info": "successfull",
+            "msg":"here"
         }
     except Exception as e:
         print(err)
+        db.conn.close()
         return {
             "info": "failed",
             "msg": str(e)
