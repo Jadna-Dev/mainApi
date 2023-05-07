@@ -1,51 +1,112 @@
+import datetime
 from fastapi import FastAPI
-from database.database import cur,conn
+from database.database import cur, conn, drop_table,create_pdxgoods,create_pdxinv,create_pdxset
 from json import JSONEncoder
+from checkSales.database import *
+from time import sleep
 
 cs = FastAPI()
 
-@cs.get("/getdata/{dbname}")
-async def getdata(dbname:str):
-    conn.database = dbname
-    cur.execute(f"""
-                   SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'   THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
-                        ,sum(CASE WHEN pdxinv.type = 'SA' THEN  pdxinv.qprice * pdxinv.qpacking else 0 END)-sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qprice * pdxinv.qpacking else 0 END) as total_sales
-                        ,max(CASE WHEN pdxinv.type = 'PI' THEN  pdxinv.qprice  else 0 END ) * (sum(CASE WHEN pdxinv.type = 'SA'   THEN  pdxinv.qout  else 0 END) - sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qin else 0 END)) as sales_cost
-                                FROM pdxset
-                                left JOIN `pdxgoods`
-                                ON pdxset.id = `pdxgoods`.set
-                                inner join pdxinv
-                                on pdxinv.itemcode = pdxgoods.itemcode
-                                where pdxinv.depstk = "1" 
-                                group by pdxset.name,pdxgoods.itemcode
-                   """)
-    rows = cur
-    keys = [i[0] for i in cur.description]
-    data = [dict(zip(keys, row)) for row in rows]
-    
-    cur.execute(f"""
-                   SELECT distinct(id) as id,name from pdxset order by id
-                   """)
-    rows = cur
-    keys = [i[0] for i in cur.description]
-    setlist = [dict(zip(keys, row)) for row in rows]
-    # {"name":"CON   B","itemcode":"1031-18","total_cost":2245.4456,"total_sales":955.5216667,"sales_cost":676.7005}
-    fdata = []
-    for setid in setlist:
-        total_cost = 0
-        total_sales = 0
-        sales_cost = 0
-        for d in data:
-            if setid["id"] == d["id"]:
-                total_cost = total_cost + float(d["total_cost"])
-                total_sales = total_sales + float(d["total_sales"])
-                sales_cost = sales_cost + float(d["sales_cost"])
-        fdata.append({
-            "setname":setid["name"],
-            "total_cost":total_cost,
-            "total_sales":total_sales,
-            "sales_cost":sales_cost,
-            "sales_profit":total_sales - sales_cost,
-            "stock_value":total_cost - sales_cost,
-        })
-    return  {"info":fdata}
+
+@cs.post("/login/")
+async def login(data: dict):
+    try:
+        r = select_login(data["id"], data["password"])
+        if r == "failed":
+            return {
+                "info": "failed",
+                "msg": "Incorrect Password or Id"
+            }
+        else:
+            return {
+                "info": "successfull",
+                "token": r
+            }
+    except Exception as e:
+        return error_handler(e)
+
+
+@cs.post("/check_token/")
+async def getdata(data: dict):
+    try:
+        print(data["token"])
+        return select_token(data["token"])
+
+    except Exception as e:
+        return error_handler(e)
+
+
+@cs.post("/getdata/")
+async def getdata(data: dict):
+    print(data)
+    try:
+        if select_token(data["token"])["info"] != "successfull":
+            return {"info": "failed"}
+        r = select_data(data["dbname"])
+        lg = select_last_login(data["dbname"],data["id"])
+        return {
+            "info": "successfull",
+            "data": r,
+            "lg":lg
+            
+        }
+    except Exception as e:
+        return error_handler(e)
+
+
+@cs.post("/insert_data/")
+async def insert_data(ldata: dict):
+    err = ""
+    conn.rollback()
+    try:
+        data = ldata["data"]
+        conn.database = data["onlineDbName"]
+        for d in data["data"]:
+            drop_table(data["onlineDbName"], d["tablename"])
+            sleep(1)
+            exec(f"""create_{d["tablename"]}(\"{data["onlineDbName"]}\")""")
+            print("here")
+            sleep(1)
+            for row in d["data"]:
+                fields = ""
+                values = ""
+                for idx, key in enumerate(row.keys()):
+                    if idx == 0:
+                        fields = fields + "`"+key+"`"
+                    else:
+                        fields = fields + "," + "`"+key+"`"
+
+                for idx, val in enumerate(row.values()):
+                    if idx == 0:
+                        values = values + "\'" + \
+                            str(val).replace("\'", "").replace("\\", "")+"\'"
+                    else:
+                        values = values + "," + "\'" + \
+                            str(val).replace("\'", "").replace("\\", "")+"\'"
+                # print(
+                #     f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
+                # )
+                err = f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
+                cur.execute(
+                    f"""INSERT INTO `{d["tablename"]}` ({fields}) VALUES ({values});"""
+                )
+                cur.execute(
+                    f"UPDATE `jnp`.`clients_data` SET `last_updated` = '{str(datetime.datetime.now())}' WHERE (`client_id` = '{data['client_id']}') and (`dbname` = '{data['onlineDbName']}');")
+            conn.commit()
+        return {
+            "info": "successfull",
+            "msg": "here"
+        }
+    except Exception as e:
+        print(err)
+        return {
+            "info": "failed",
+            "msg": str(e)
+        }
+
+
+def error_handler(err: Exception):
+    return {
+        "info": "failed",
+        "msg": str(err)
+    }
