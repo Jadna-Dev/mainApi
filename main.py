@@ -2,11 +2,13 @@ from fastapi import FastAPI
 import uvicorn
 from activation.activation import activation
 from database.main import database
+from checkSales.checkSales import cs
 
 app = FastAPI()
 
 app.mount("/activation", app=activation, name="activation")
 app.mount("/database", app=database, name="database")
+app.mount("/cs", app=cs, name="checkSales")
 
 
 @app.get("/")

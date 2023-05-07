@@ -54,3 +54,4 @@ async def insert_data(ldata: dict):
             "info": "failed",
             "msg": str(e)
         }
+
