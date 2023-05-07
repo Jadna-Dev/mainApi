@@ -4,6 +4,7 @@ from activation.activation import activation
 from database.main import database
 from checkSales.checkSales import cs
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 
 app = FastAPI()
@@ -19,7 +20,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.add_middleware(HTTPSRedirectMiddleware)
 #here
 @app.get("/")
 async def home():
@@ -30,4 +31,4 @@ async def home():
 if __name__ == "__main__":
     with open("./config.json", "r") as conf:
         config = eval(str(conf.read()))
-    uvicorn.run("main:app", host=config["host"], port=config["port"],reload=True)
+    uvicorn.run("main:app", host=config["host"], port=config["port"],reload=True,ssl_certfile="./cert/pssapi_net.pem",ssl_keyfile="./cert/pssapi_key.pem")
