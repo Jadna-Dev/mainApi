@@ -51,7 +51,7 @@ def select_token(token: str):
 def select_data(dbname):
     conn.database = dbname
     cur.execute(f"""
-                   SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'   THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
+                   SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'  THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
                         ,sum(CASE WHEN pdxinv.type = 'SA' THEN  pdxinv.qprice * pdxinv.qpacking else 0 END)-sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qprice * pdxinv.qpacking else 0 END) as total_sales
                         ,max(CASE WHEN pdxinv.type = 'PI' THEN  pdxinv.qprice  else 0 END ) * (sum(CASE WHEN pdxinv.type = 'SA'   THEN  pdxinv.qout  else 0 END) - sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qin else 0 END)) as sales_cost
                         ,sum(CASE WHEN pdxinv.type = 'PIOPEN' THEN  pdxinv.qin else 0 END) AS openqty
@@ -80,20 +80,21 @@ def select_data(dbname):
         total_cost = 0
         total_sales = 0
         sales_cost = 0
+        qtyvalue = 0
         for d in data:
             if setid["id"] == d["id"]:
                 total_cost = total_cost + float(d["total_cost"])
                 total_sales = total_sales + float(d["total_sales"])
                 sales_cost = float(sales_cost) + float(d["sales_cost"])
-        print(float(d['openqty']))
-        print(float(d['adjkqty']))
+                qtyvalue = qtyvalue + (float(float(d['total_cost']) * float(d['openqty']))) + (float(float(d['total_cost']) * float(d['adjkqty'])))
+        print(qtyvalue)
         fdata.append({
             "setname": setid["name"],
             "total_cost": f"{round( total_cost):,}",
             "total_sales": f"{round( total_sales):,}",
             "sales_cost": f"{round( sales_cost):,}",
             "sales_profit": f"{round( float(total_sales - sales_cost)):,}",
-            "stock_value": f"{float(round( float((total_cost - sales_cost) + (float(float(d['total_cost']) * float(d['openqty']))) + (float(float(d['total_cost']) * float(d['adjkqty']))) ))):,}",
+            "stock_value": f"{float(round( float((total_cost - sales_cost) + qtyvalue ))):,}",
         })
     return fdata
 
