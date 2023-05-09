@@ -85,7 +85,7 @@ def select_data(dbname):
                 total_cost = total_cost + float(d["total_cost"])
                 total_sales = total_sales + float(d["total_sales"])
                 sales_cost = float(sales_cost) + float(d["sales_cost"])
-                stock_value = stock_value + round( float(total_cost - sales_cost) + (float(float(d['total_cost']) * float(d['stockqty']))))
+                stock_value =  round( float(total_cost - sales_cost) + (float(float(d['total_cost']) * float(d['stockqty']))))
                 # + (float(float(d["total_cost"]) * float(d["stockqty"]))
         fdata.append({
             "setname": setid["name"],
