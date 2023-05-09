@@ -86,10 +86,9 @@ def select_data(dbname):
                 total_cost = total_cost + float(d["total_cost"])
                 total_sales = total_sales + float(d["total_sales"])
                 sales_cost = float(sales_cost) + float(d["sales_cost"])
-                if setid["id"] == '09':
-                    qtyvalue = (float(float(d['total_cost']) * float(d['openqty']))) - (float(float(d['total_cost']) * float(d['adjkqty'])))
-                    print((float(float(d['openqty']))))
-                    print((float(float(d['adjkqty']))))
+                qtyvalue = (float(d['openqty'])) - (float(d['adjkqty']))
+                print((float(float(d['openqty']))))
+                print((float(float(d['adjkqty']))))
         fdata.append({
             "setname": setid["name"],
             "total_cost": f"{round( total_cost):,}",
