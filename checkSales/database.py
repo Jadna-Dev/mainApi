@@ -83,7 +83,7 @@ def select_data(dbname):
             if setid["id"] == d["id"]:
                 total_cost = total_cost + float(d["total_cost"])
                 total_sales = total_sales + float(d["total_sales"])
-                sales_cost = float(sales_cost) + float(d["sales_cost"]  + (float(d["total_cost"]) * float(d["stockqty"]) ))
+                sales_cost = float(sales_cost) + float(d["sales_cost"]  + float(float(d["total_cost"]) * float(d["stockqty"]) ))
         fdata.append({
             "setname": setid["name"],
             "total_cost": f"{round( total_cost):,}",
