@@ -92,7 +92,7 @@ def select_data(dbname):
             "total_sales": f"{round( total_sales):,}",
             "sales_cost": f"{round( sales_cost):,}",
             "sales_profit": f"{round( float(total_sales - sales_cost)):,}",
-            "stock_value": f"{float(round( float((total_cost - sales_cost) + (float(float(d['total_cost']) * float(d['openqty']))) - (float(float(d['total_cost']) * float(d['adjkqty']))) ))):,}",
+            "stock_value": f"{float(round( float((total_cost - sales_cost) + (float(float(d['total_cost']) * float(d['openqty']))) + (float(float(d['total_cost']) * float(d['adjkqty']))) ))):,}",
         })
     return fdata
 
