@@ -53,7 +53,8 @@ def select_data(dbname):
     cur.execute(f"""
                    SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'   THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
                         ,sum(CASE WHEN pdxinv.type = 'SA' THEN  pdxinv.qprice * pdxinv.qpacking else 0 END)-sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qprice * pdxinv.qpacking else 0 END) as total_sales
-                        ,max(CASE WHEN pdxinv.type = 'PI' THEN  pdxinv.qprice  else 0 END ) * (sum(CASE WHEN pdxinv.type = 'SA'   THEN  pdxinv.qout  else 0 END) - sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qin else 0 END)) as sales_cost
+                        ,max(CASE WHEN pdxinv.type = 'PI' THEN  pdxinv.qprice  else 0 END ) * (sum(CASE WHEN pdxinv.type = 'SA'   THEN  pdxinv.qout  else 0 END) - sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qin else 0 END)) as sales_cost,
+                        ,sum(CASE WHEN pdxinv.type = 'PIADJ' or pdxinv.type = 'PIOPEN' THEN  pdxinv.qin else 0 END) AS stockqty
                                 FROM pdxset
                                 left JOIN `pdxgoods`
                                 ON pdxset.id = `pdxgoods`.set
@@ -82,7 +83,7 @@ def select_data(dbname):
             if setid["id"] == d["id"]:
                 total_cost = total_cost + float(d["total_cost"])
                 total_sales = total_sales + float(d["total_sales"])
-                sales_cost = sales_cost + float(d["sales_cost"])
+                sales_cost = sales_cost + float(d["sales_cost"]  + (float(d["total_cost"]) * float(d["stockqty"]) ))
         fdata.append({
             "setname": setid["name"],
             "total_cost": f"{round( total_cost):,}",
