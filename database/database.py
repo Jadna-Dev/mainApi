@@ -65,6 +65,7 @@ def create_pdxinv(dbname):
   `depstk` varchar(45) DEFAULT NULL,
   `qin` decimal(18,7) DEFAULT NULL,
   `qout` decimal(18,7) DEFAULT NULL,
+  `mprice` decimal(18,7) DEFAULT NULL,
   `qprice` decimal(18,7) DEFAULT NULL,
   `total` decimal(18,7) DEFAULT NULL,
   `qpacking` decimal(18,7) DEFAULT NULL
