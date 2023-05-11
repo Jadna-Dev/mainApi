@@ -33,6 +33,7 @@ def create_pdxgoods(dbname):
   `sale2` decimal(18,3) DEFAULT '0.000',
   `sale3` decimal(18,3) DEFAULT '0.000',
   `sale4` decimal(18,3) DEFAULT '0.000',
+  `pdxcost` decimal(18,3) DEFAULT '0.000',
   `tax_included` varchar(1) NOT NULL DEFAULT '',
   `disc1` decimal(18,3) DEFAULT '0.000',
   `disc2` decimal(18,3) DEFAULT '0.000',
@@ -65,7 +66,6 @@ def create_pdxinv(dbname):
   `depstk` varchar(45) DEFAULT NULL,
   `qin` decimal(18,7) DEFAULT NULL,
   `qout` decimal(18,7) DEFAULT NULL,
-  `mprice` decimal(18,7) DEFAULT NULL,
   `qprice` decimal(18,7) DEFAULT NULL,
   `total` decimal(18,7) DEFAULT NULL,
   `qpacking` decimal(18,7) DEFAULT NULL
