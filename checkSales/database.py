@@ -60,7 +60,7 @@ def select_data(dbname):
                                 ON pdxset.id = `pdxgoods`.set
                                 inner join pdxinv
                                 on pdxinv.itemcode = pdxgoods.itemcode
-                                where pdxinv.depstk = "1" 
+                                
                                 group by pdxset.name,pdxgoods.itemcode
                    """)
     rows = cur
