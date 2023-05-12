@@ -54,7 +54,7 @@ def select_data(dbname):
                    SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'  THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
                         ,sum(CASE WHEN pdxinv.type = 'SA' THEN  pdxinv.qprice * pdxinv.qpacking else 0 END)-sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qprice * pdxinv.qpacking else 0 END) as total_sales
                         ,pdxgoods.pdxcost * (sum(CASE WHEN pdxinv.type = 'SA'   THEN  pdxinv.qout  else 0 END) - sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qin else 0 END)) as sales_cost
-                        ,sum(CASE WHEN pdxinv.type = 'PIADJ' THEN pdxinv.qprice *  pdxinv.qin else 0 END) AS adjkqty
+                        ,pdxgoods.pdxcost * sum(CASE WHEN pdxinv.type = 'PIADJ' THEN pdxinv.qin else 0 END) AS adjkqty
                                 FROM pdxset
                                 left JOIN `pdxgoods`
                                 ON pdxset.id = `pdxgoods`.set
