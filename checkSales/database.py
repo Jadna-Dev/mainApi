@@ -60,7 +60,6 @@ def select_data(dbname):
                                 ON pdxset.id = `pdxgoods`.set
                                 inner join pdxinv
                                 on pdxinv.itemcode = pdxgoods.itemcode
-                                
                                 group by pdxset.name,pdxgoods.itemcode
                    """)
     rows = cur
@@ -92,7 +91,7 @@ def select_data(dbname):
             "total_sales": f"{round( total_sales):,}",
             "sales_cost": f"{round( sales_cost):,}",
             "sales_profit": f"{round( float(total_sales - sales_cost)):,}",
-             "stock_value": f"{round( float((total_cost - sales_cost) - qtyvalue )):,}",
+            "stock_value": f"{round( float((total_cost - sales_cost) + qtyvalue )):,}",
         })
     return fdata
 
