@@ -34,6 +34,7 @@ def create_pdxgoods(dbname):
   `sale3` decimal(18,3) DEFAULT '0.000',
   `sale4` decimal(18,3) DEFAULT '0.000',
   `pdxcost` decimal(18,3) DEFAULT '0.000',
+  `pdxcost2` decimal(18,3) DEFAULT '0.000',
   `tax_included` varchar(1) NOT NULL DEFAULT '',
   `disc1` decimal(18,3) DEFAULT '0.000',
   `disc2` decimal(18,3) DEFAULT '0.000',
