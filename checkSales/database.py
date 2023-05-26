@@ -57,6 +57,7 @@ def select_data(dbname):
                         ,pdxgoods.pdxcost * sum(CASE WHEN pdxinv.type = 'PIADJ' THEN pdxinv.qin else 0 END) AS adjkqty
                         ,pdxgoods.pdxcost2 * (sum(CASE WHEN pdxinv.type != 'jadjad' THEN pdxinv.qin  else 0 END)-sum(CASE WHEN pdxinv.type != 'jadjad' THEN pdxinv.qout  else 0 END)) AS stock_value1
                         ,pdxgoods.pdxcost2 * (sum(pdxinv.qin )-sum(pdxinv.qout)) AS stock_value
+                        ,pdxgoods.pdxcost2 * (sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qin else 0 END)-sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qout else 0 END)) AS stock_value2
                                 FROM pdxset
                                 inner JOIN `pdxgoods`
                                 ON pdxset.id = `pdxgoods`.set
