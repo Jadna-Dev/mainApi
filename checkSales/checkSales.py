@@ -1,9 +1,5 @@
-import datetime
 from fastapi import FastAPI
-from database.database import cur, conn, drop_table,create_pdxgoods,create_pdxinv,create_pdxset
-from json import JSONEncoder
 from checkSales.database import *
-from time import sleep
 
 cs = FastAPI()
 
@@ -29,7 +25,6 @@ async def login(data: dict):
 @cs.post("/check_token/")
 async def getdata(data: dict):
     try:
-        print(data["token"])
         return select_token(data["token"])
 
     except Exception as e:
@@ -38,7 +33,6 @@ async def getdata(data: dict):
 
 @cs.post("/getdata/")
 async def getdata(data: dict):
-    print(data)
     try:
         if select_token(data["token"])["info"] != "successfull":
             return {"info": "failed"}

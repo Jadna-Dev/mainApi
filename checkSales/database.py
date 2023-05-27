@@ -1,4 +1,3 @@
-from sqlite3 import dbapi2
 from database.database import conn, cur
 import uuid
 
