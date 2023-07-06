@@ -3,6 +3,7 @@ import uuid
 
 
 def select_login(id, password):
+    conn.rollback()
     cur.execute(
         f"SELECT * FROM jnp.clients_online where service_name = 'cs' and client_id = '{id}' and password = '{password}';")
     rows = cur
@@ -19,6 +20,7 @@ def select_login(id, password):
 
 
 def select_token(token: str):
+    conn.rollback()
     cur.execute(f"SELECT * FROM jnp.clients_online where token = '{token}';")
     rows = cur
     keys = [i[0] for i in cur.description]
@@ -48,7 +50,7 @@ def select_token(token: str):
 
 
 def select_data(dbname):
-    conn.database = dbname
+    conn.rollback()
     cur.execute(f"""
                    SELECT `pdxset`.name,pdxset.id,pdxgoods.itemcode,sum(CASE WHEN pdxinv.type = 'PI' or pdxinv.type = 'PIOPEN'  THEN  pdxinv.qprice * pdxinv.qin else 0 END) as total_cost
                         ,sum(CASE WHEN pdxinv.type = 'SA' THEN  pdxinv.qprice * pdxinv.qpacking else 0 END)-sum(CASE WHEN pdxinv.type = 'SR'   THEN  pdxinv.qprice * pdxinv.qpacking else 0 END) as total_sales
@@ -57,10 +59,10 @@ def select_data(dbname):
                         ,pdxgoods.pdxcost2 * (sum(CASE WHEN pdxinv.type != 'jadjad' THEN pdxinv.qin  else 0 END)-sum(CASE WHEN pdxinv.type != 'jadjad' THEN pdxinv.qout  else 0 END)) AS stock_value1
                         ,pdxgoods.pdxcost2 * (sum(pdxinv.qin )-sum(pdxinv.qout)) AS stock_value1
                         ,pdxgoods.pdxcost2 * (sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qin else 0 END)-sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qout else 0 END)) AS stock_value
-                                FROM pdxset
-                                inner JOIN `pdxgoods`
+                                FROM {dbname}.pdxset
+                                inner JOIN {dbname}`pdxgoods`
                                 ON pdxset.id = `pdxgoods`.set
-                                inner join pdxinv
+                                inner join {dbname}.pdxinv
                                 on pdxinv.itemcode = pdxgoods.itemcode
                                 group by pdxset.name,pdxgoods.itemcode
                    """)
@@ -69,7 +71,7 @@ def select_data(dbname):
     data = [dict(zip(keys, row)) for row in rows]
 
     cur.execute(f"""
-                   SELECT distinct(id) as id,name from pdxset order by id
+                   SELECT distinct(id) as id,name from {dbname}.pdxset order by id
                    """)
     rows = cur
     keys = [i[0] for i in cur.description]
@@ -101,6 +103,7 @@ def select_data(dbname):
 
 
 def select_last_login(dbname, id):
+    conn.rollback()
     cur.execute(f"""
                 SELECT * FROM jnp.clients_data where client_id = '{id}' and dbname = '{dbname}';
                 """)
