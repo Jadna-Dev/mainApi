@@ -1,4 +1,4 @@
-from database.database import conn, cur
+from database import conn, cur
 import uuid
 
 
