@@ -9,11 +9,14 @@ async def login(data: dict):
     try:
         r = select_login(data["id"], data["password"])
         if r == "failed":
+            conn.rollback()
             return {
                 "info": "failed",
                 "msg": "Incorrect Password or Id"
             }
         else:
+            conn.rollback()
+            
             return {
                 "info": "successfull",
                 "token": r
@@ -38,6 +41,7 @@ async def getdata(data: dict):
             return {"info": "failed"}
         r = select_data(data["dbname"])
         lg = select_last_login(data["dbname"],data["id"])
+        conn.rollback()
         return {
             "info": "successfull",
             "data": r,
@@ -50,6 +54,7 @@ async def getdata(data: dict):
 
 
 def error_handler(err: Exception):
+    conn.rollback()
     return {
         "info": "failed",
         "msg": str(err)

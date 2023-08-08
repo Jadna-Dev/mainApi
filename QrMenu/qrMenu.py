@@ -9,6 +9,7 @@ qrMenu = FastAPI()
 async def get_items(data:dict):
     try:
         r = db.select_items(data["dbname"])
+        db.conn.rollback()
         return{
             "data":r,
             "info":"Successfull"
@@ -18,6 +19,7 @@ async def get_items(data:dict):
         
         
 def errorHandler(e):
+    db.conn.rollback()
     return{
         "info":"Failed",
         "msg":str(e)
