@@ -60,7 +60,7 @@ def select_data(dbname):
                         ,pdxgoods.pdxcost2 * (sum(pdxinv.qin )-sum(pdxinv.qout)) AS stock_value1
                         ,pdxgoods.pdxcost2 * (sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qin else 0 END)-sum(CASE WHEN pdxinv.type != 'SAT' THEN pdxinv.qout else 0 END)) AS stock_value
                                 FROM {dbname}.pdxset
-                                inner JOIN {dbname}`pdxgoods`
+                                inner JOIN {dbname}.`pdxgoods`
                                 ON pdxset.id = `pdxgoods`.set
                                 inner join {dbname}.pdxinv
                                 on pdxinv.itemcode = pdxgoods.itemcode
