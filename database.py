@@ -8,7 +8,7 @@ try:
         dbport = conf["databasePort"]
         dbpass = conf["databasePass"]
 
-    conn = db.connect(user="root", password=dbpass,
+    conn = db.connect(user="jadna", password=dbpass,
                       host=dbip, port=dbport)
     cur = conn.cursor()
 except Exception as e:

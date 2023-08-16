@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fernet import Fernet
+import activation.database as db
+
 activation = FastAPI()
 
 fernet = Fernet(b'VelTY920UXSRTjsT4O7EjYiKNeBMmusSrJguaLeC4s0=')
@@ -8,14 +10,10 @@ fernet = Fernet(b'VelTY920UXSRTjsT4O7EjYiKNeBMmusSrJguaLeC4s0=')
 
 @activation.post("/check_activation/")
 async def get_activation(data:dict):
-    print(data)
-    mac = fernet.decrypt(data["mac"].encode()).decode()
-    print(mac)
+
+    r = db.check_activation(data["hard_disk_info"])
+    db.conn.rollback
+
     return JSONResponse({
-        "info": "successfull",
-        "error":"",
-        "msg1":"",
-        "msg2":"",
-        "msg3":"",
-        "msg4":"",
-        "msg5":"",})
+        "licence":str(r),
+    })
